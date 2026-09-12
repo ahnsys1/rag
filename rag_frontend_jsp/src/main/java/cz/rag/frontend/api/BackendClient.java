@@ -39,7 +39,8 @@ public final class BackendClient {
     private static final BackendClient INSTANCE = new BackendClient(resolveBaseUrl());
 
     private final String baseUrl;
-    private final HttpClient http = HttpClient.newBuilder()
+        private final HttpClient http = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(3))
             .followRedirects(HttpClient.Redirect.NEVER)
             .build();
@@ -174,6 +175,20 @@ public final class BackendClient {
                 JsonNode detail = mapper.readTree(bytes).path("detail");
                 if (detail.isTextual()) {
                     return detail.asText();
+                }
+                if (detail.isArray()) {
+                    StringBuilder message = new StringBuilder();
+                    detail.forEach(item -> {
+                        String location = item.path("loc").toString();
+                        String reason = item.path("msg").asText("Validation error");
+                        if (message.length() > 0) {
+                            message.append("; ");
+                        }
+                        message.append(location).append(": ").append(reason);
+                    });
+                    if (message.length() > 0) {
+                        return message.toString();
+                    }
                 }
             } catch (IOException ignored) {
                 // fall through to generic message

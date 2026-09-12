@@ -2,11 +2,17 @@ package cz.rag.frontend.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SearchRequest {
 
+    @JsonProperty("query")
     private String query;
+    @JsonProperty("top_k")
     private int topK;
+    @JsonProperty("mode")
     private String mode;
+    @JsonProperty("document_ids")
     private List<String> documentIds;
 
     public SearchRequest() { }
