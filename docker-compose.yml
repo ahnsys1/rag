@@ -25,7 +25,7 @@ services:
       EMBEDDING_DIM: ${EMBEDDING_DIM:-384}
       LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
       OLLAMA_URL: http://ollama:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2.1b}
       CORS_ORIGINS: http://localhost:4200,http://localhost:4300
     ports:
       - "127.0.0.1:8000:8000"
