@@ -1,7 +1,8 @@
 import uuid
 from pathlib import PurePosixPath
+from urllib.parse import quote
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -47,6 +48,9 @@ async def upload_document(
 
     existing = indexing.find_by_hash(db, indexing.sha256_hex(data))
     if existing is not None:
+        if not existing.content_data:
+            existing.content_data = data
+            db.commit()
         return UploadResponse(document=DocumentOut.model_validate(existing), duplicate=True)
 
     doc = indexing.register_document(db, filename, file.content_type, data)
@@ -65,6 +69,20 @@ def get_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> Docum
     if doc is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Document not found")
     return doc
+
+
+@router.get("/{document_id}/download")
+def download_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> Response:
+    doc = db.get(Document, document_id)
+    if doc is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Document not found")
+    if not doc.content_data:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Original file is not available")
+    return Response(
+        content=doc.content_data,
+        media_type=doc.content_type or "application/octet-stream",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(doc.filename)}"},
+    )
 
 
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -25,6 +25,11 @@ def init_db() -> None:
     with engine.begin() as conn:
         conn.execute(
             text(
+                "ALTER TABLE documents ADD COLUMN IF NOT EXISTS content_data BYTEA"
+            )
+        )
+        conn.execute(
+            text(
                 "CREATE INDEX IF NOT EXISTS ix_chunks_embedding_hnsw "
                 "ON chunks USING hnsw (embedding vector_cosine_ops)"
             )

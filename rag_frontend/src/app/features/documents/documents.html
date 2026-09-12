@@ -76,6 +76,7 @@
           <td class="num">{{ doc.size_bytes / 1024 | number: '1.0-0' }} kB</td>
           <td>{{ doc.created_at | date: 'd.M.yyyy HH:mm' }}</td>
           <td class="num">
+            <button type="button" class="btn small" (click)="download(doc)">Stáhnout</button>
             <button type="button" class="btn danger small" (click)="remove(doc)">Smazat</button>
           </td>
         </tr>

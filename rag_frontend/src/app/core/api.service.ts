@@ -85,6 +85,10 @@ export class ApiService {
     return this.http.delete<void>(`${this.base}/documents/${id}`);
   }
 
+  downloadDocument(id: string): Observable<Blob> {
+    return this.http.get(`${this.base}/documents/${id}/download`, { responseType: 'blob' });
+  }
+
   search(req: SearchRequest): Observable<SearchResponse> {
     return this.http.post<SearchResponse>(`${this.base}/search`, req);
   }

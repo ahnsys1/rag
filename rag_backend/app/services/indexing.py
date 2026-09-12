@@ -32,6 +32,7 @@ def register_document(
     doc = Document(
         filename=filename,
         content_type=content_type,
+        content_data=data,
         size_bytes=len(data),
         sha256=sha256_hex(data),
         status=DocumentStatus.processing,

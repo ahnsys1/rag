@@ -118,6 +118,20 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
+  download(doc: RagDocument): void {
+    this.api.downloadDocument(doc.id).subscribe({
+      next: (file) => {
+        const url = URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = doc.filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+      error: (err: HttpErrorResponse) => this.error.set(this.describe(err)),
+    });
+  }
+
   clearUploads(): void {
     this.uploads.set([]);
   }

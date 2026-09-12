@@ -135,3 +135,25 @@ docker compose exec ollama ollama pull llama3.2   # jen pro generování odpově
 
 cd ~/Desktop/rag && docker compose up -d --build
 docker compose exec ollama ollama pull llama3.2   # jen pro generování odpovědí
+
+
+
+
+
+
+
+
+
+
+
+# RUNNING
+cd /home/jan/Desktop/rag
+docker compose up -d db
+
+cd rag_backend
+cp .env.example .env   # pouze pokud .env ještě neexistuje
+uvicorn app.main:app --reload
+
+
+cd /home/jan/Desktop/rag
+docker compose up -d --build
