@@ -1,0 +1,35 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title><c:out value="${empty pageTitle ? 'RAG – Dokumenty a sémantické vyhledávání' : pageTitle}"/></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <c:if test="${processingCount gt 0}">
+    <%-- Angular polled every 2 s while a document was indexing; plain HTML equivalent. --%>
+    <meta http-equiv="refresh" content="3">
+  </c:if>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/styles.css">
+</head>
+<body>
+<nav class="topbar">
+  <a class="brand" href="${pageContext.request.contextPath}/search">RAG</a>
+  <a href="${pageContext.request.contextPath}/search" class="${active eq 'search' ? 'active' : ''}">Vyhledávání</a>
+  <a href="${pageContext.request.contextPath}/documents" class="${active eq 'documents' ? 'active' : ''}">Dokumenty</a>
+  <span class="status">
+    <c:choose>
+      <c:when test="${not empty health}">
+        <span class="dot ok"></span>
+        <c:out value="${health.embeddingModelShort}"/> · ${health.embeddingDim}d
+        <c:choose>
+          <c:when test="${not empty health.llmModel}"> · LLM <c:out value="${health.llmModel}"/></c:when>
+          <c:otherwise> · bez LLM</c:otherwise>
+        </c:choose>
+      </c:when>
+      <c:when test="${offline}">
+        <span class="dot bad"></span> backend nedostupný
+      </c:when>
+    </c:choose>
+  </span>
+</nav>
+<main>

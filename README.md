@@ -6,9 +6,10 @@ běží sémantické / hybridní vyhledávání a volitelně generování odpov�
 
 ```
 rag/
-├── docker-compose.yml     # db (Postgres 18 + pgvector), backend, frontend, ollama
+├── docker-compose.yml     # db (Postgres 18 + pgvector), backend, frontend, frontend-jsp, ollama
 ├── rag_backend/           # Python 3.12 · FastAPI · SQLAlchemy · pgvector · fastembed
-└── rag_frontend/          # Angular 22 (standalone komponenty, signals)
+├── rag_frontend/          # Angular 22 (standalone komponenty, signals)
+└── rag_frontend_jsp/      # Jakarta Servlet 6 + JSP/JSTL (serverově renderovaná varianta)
 ```
 
 ## Proč PostgreSQL + pgvector
@@ -48,6 +49,7 @@ docker compose up -d --build
 | Služba    | URL                          |
 |-----------|------------------------------|
 | Frontend  | http://localhost:4300        |
+| Frontend (JSP) | http://localhost:4301   |
 | Backend   | http://localhost:8000/docs   |
 | Postgres  | localhost:55433 (rag / rag)  |
 | Ollama    | http://localhost:11434       |

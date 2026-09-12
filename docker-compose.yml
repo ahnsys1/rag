@@ -25,7 +25,7 @@ services:
       EMBEDDING_DIM: ${EMBEDDING_DIM:-384}
       LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
       OLLAMA_URL: http://ollama:11434
-      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2.1b}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
       CORS_ORIGINS: http://localhost:4200,http://localhost:4300
     ports:
       - "127.0.0.1:8000:8000"
@@ -43,6 +43,17 @@ services:
     depends_on:
       - backend
 
+  # Server-rendered JSP alternative to the Angular frontend (same features).
+  frontend-jsp:
+    build: ./rag_frontend_jsp
+    container_name: rag-frontend-jsp
+    environment:
+      RAG_BACKEND_URL: http://backend:8000
+    ports:
+      - "127.0.0.1:4301:8080"
+    depends_on:
+      - backend
+
   # Local open-source LLM for answer generation. Pull a model once:
   #   docker compose exec ollama ollama pull llama3.2
   ollama:
@@ -52,6 +63,12 @@ services:
       - "127.0.0.1:11434:11434"
     volumes:
       - rag_ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 volumes:
   rag_pgdata:
