@@ -55,7 +55,7 @@ docker compose up -d --build
 Pro generování odpovědí stáhněte model (jednorázově):
 
 ```bash
-docker compose exec ollama ollama pull llama3.2
+docker compose exec ollama ollama pull llama3.2:1b   # jen pro generování odpovědí
 ```
 
 Bez LLM lze systém používat jen pro vyhledávání; případně nastavte `LLM_PROVIDER=none`,
@@ -109,7 +109,7 @@ curl -X POST http://localhost:8000/api/search -H 'content-type: application/json
 | `EMBEDDING_DIM`       | `384` (musí odpovídat modelu; při změně smažte volume db)  |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `900` / `150` znaků                               |
 | `LLM_PROVIDER`        | `ollama` \| `none`                                         |
-| `OLLAMA_URL` / `OLLAMA_MODEL` | `http://localhost:11434` / `llama3.2`              |
+| `OLLAMA_URL` / `OLLAMA_MODEL` | `http://localhost:11434` / `llama3.2:1b`           |
 | `MAX_UPLOAD_MB`       | `50`                                                       |
 | `CORS_ORIGINS`        | `http://localhost:4200`                                    |
 
