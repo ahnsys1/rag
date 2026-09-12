@@ -1,0 +1,45 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0 1.25rem;
+  height: 52px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+
+  a {
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.25rem 0;
+    border-bottom: 2px solid transparent;
+
+    &.active { color: var(--text); border-color: var(--accent); }
+  }
+
+  .brand {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    border: 0;
+  }
+}
+
+.status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+
+  &.ok { background: var(--success); }
+  &.bad { background: var(--danger); }
+}

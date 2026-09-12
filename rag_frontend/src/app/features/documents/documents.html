@@ -1,0 +1,91 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Dokumenty</h1>
+      <p class="muted">
+        {{ documents().length }} dokumentů · {{ indexedChunks() }} úryvků v indexu
+        @if (processingCount() > 0) {
+          · <span class="badge processing">{{ processingCount() }} se indexuje</span>
+        }
+      </p>
+    </div>
+    <button type="button" class="btn ghost" (click)="refresh()" [disabled]="loading()">
+      Obnovit
+    </button>
+  </header>
+
+  <label
+    class="dropzone"
+    [class.active]="dragOver()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="dragOver.set(false)"
+    (drop)="onDrop($event)"
+  >
+    <input type="file" multiple accept=".pdf,.docx,.txt,.md" (change)="onFileInput($event)" hidden />
+    <strong>Přetáhněte soubory sem</strong> nebo klikněte pro výběr
+    <span class="muted">PDF, DOCX, TXT, MD</span>
+  </label>
+
+  @if (uploads().length) {
+    <ul class="uploads">
+      @for (u of uploads(); track u) {
+        <li [class]="u.state">
+          <span class="name">{{ u.name }}</span>
+          <span class="state">
+            @switch (u.state) {
+              @case ('uploading') { Nahrává se… }
+              @case ('accepted') { {{ u.message }} }
+              @case ('duplicate') { {{ u.message }} }
+              @case ('error') { Chyba: {{ u.message }} }
+            }
+          </span>
+        </li>
+      }
+      <li class="actions"><button type="button" class="link" (click)="clearUploads()">Skrýt</button></li>
+    </ul>
+  }
+
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  <table class="docs">
+    <thead>
+      <tr>
+        <th>Soubor</th>
+        <th>Stav</th>
+        <th class="num">Úryvky</th>
+        <th class="num">Strany</th>
+        <th class="num">Velikost</th>
+        <th>Nahráno</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (doc of documents(); track doc.id) {
+        <tr>
+          <td class="name">
+            {{ doc.filename }}
+            @if (doc.error) {
+              <div class="error-text">{{ doc.error }}</div>
+            }
+          </td>
+          <td><span class="badge" [class]="doc.status">{{ doc.status }}</span></td>
+          <td class="num">{{ doc.chunk_count }}</td>
+          <td class="num">{{ doc.page_count ?? '–' }}</td>
+          <td class="num">{{ doc.size_bytes / 1024 | number: '1.0-0' }} kB</td>
+          <td>{{ doc.created_at | date: 'd.M.yyyy HH:mm' }}</td>
+          <td class="num">
+            <button type="button" class="btn danger small" (click)="remove(doc)">Smazat</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="empty">
+            @if (loading()) { Načítám… } @else { Zatím nebyl nahrán žádný dokument. }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

@@ -1,0 +1,61 @@
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover,
+  &.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+}
+
+.uploads {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child { border-bottom: 0; }
+    &.error .state { color: var(--danger); }
+    &.accepted .state { color: var(--success); }
+    &.duplicate .state { color: var(--warning); }
+    &.actions { justify-content: flex-end; background: var(--surface); }
+  }
+}
+
+.docs {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+
+  th, td {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+  th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+  .num { text-align: right; white-space: nowrap; }
+  .name { word-break: break-word; }
+  .empty { text-align: center; color: var(--muted); padding: 2rem; }
+  .error-text { color: var(--danger); font-size: 0.8rem; margin-top: 0.25rem; }
+}

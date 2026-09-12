@@ -1,0 +1,94 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Sémantické vyhledávání</h1>
+      <p class="muted">Dotaz se převede na vektor a porovná s úryvky dokumentů v PostgreSQL / pgvector.</p>
+    </div>
+  </header>
+
+  <form class="search-form" (ngSubmit)="search()">
+    <textarea
+      name="query"
+      rows="3"
+      [(ngModel)]="query"
+      placeholder="Např. Jaké jsou podmínky pro ukončení smlouvy?"
+      (keydown.control.enter)="search()"
+    ></textarea>
+
+    <div class="controls">
+      <label>
+        Režim
+        <select name="mode" [(ngModel)]="mode">
+          <option value="hybrid">Hybridní (vektor + fulltext)</option>
+          <option value="semantic">Pouze sémantický</option>
+        </select>
+      </label>
+      <label>
+        Počet výsledků
+        <input name="topK" type="number" min="1" max="50" [(ngModel)]="topK" />
+      </label>
+      <label class="grow">
+        Omezit na dokumenty
+        <select name="docs" multiple [(ngModel)]="selectedDocumentIds" size="3">
+          @for (d of documents(); track d.id) {
+            <option [value]="d.id">{{ d.filename }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn primary" [disabled]="busy() || !query.trim()">
+        @if (busy() === 'search') { Hledám… } @else { Hledat }
+      </button>
+      <button
+        type="button"
+        class="btn"
+        (click)="ask()"
+        [disabled]="busy() || !query.trim()"
+        [title]="llmAvailable() === false ? 'LLM není nakonfigurováno – vrátí se jen nalezené pasáže' : ''"
+      >
+        @if (busy() === 'ask') { Generuji odpověď… } @else { Zeptat se (RAG) }
+      </button>
+      @if (llmAvailable() === false) {
+        <span class="muted small">LLM vypnuto – odpověď bude složena z nalezených pasáží.</span>
+      }
+    </div>
+  </form>
+
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  @if (answer()) {
+    <article class="answer">
+      <h2>Odpověď @if (answerModel()) { <span class="muted small">({{ answerModel() }})</span> }</h2>
+      <pre>{{ answer() }}</pre>
+    </article>
+  }
+
+  @if (lastQuery()) {
+    <h2 class="results-title">
+      {{ answer() ? 'Zdroje' : 'Výsledky' }} <span class="muted small">pro „{{ lastQuery() }}“</span>
+    </h2>
+    @if (!hits().length) {
+      <p class="muted">Nic nenalezeno.</p>
+    }
+    <ol class="hits">
+      @for (hit of hits(); track hit.chunk_id) {
+        <li class="hit">
+          <header>
+            <span class="badge">[{{ $index + 1 }}]</span>
+            <strong>{{ hit.filename }}</strong>
+            @if (hit.page) { <span class="muted">strana {{ hit.page }}</span> }
+            <span class="muted">úryvek #{{ hit.chunk_index + 1 }}</span>
+            <span class="score" [title]="mode === 'hybrid' ? 'Relativní RRF skóre' : 'Kosinová podobnost'">
+              {{ hit.score | number: '1.2-3' }}
+            </span>
+          </header>
+          <p>{{ hit.content }}</p>
+        </li>
+      }
+    </ol>
+  }
+</section>

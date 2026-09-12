@@ -1,0 +1,18 @@
+<nav class="topbar">
+  <a class="brand" routerLink="/search">RAG</a>
+  <a routerLink="/search" routerLinkActive="active">Vyhledávání</a>
+  <a routerLink="/documents" routerLinkActive="active">Dokumenty</a>
+  <span class="status">
+    @if (health(); as h) {
+      <span class="dot ok"></span>
+      {{ h.embedding_model.split('/').pop() }} · {{ h.embedding_dim }}d
+      @if (h.llm_model) { · LLM {{ h.llm_model }} } @else { · bez LLM }
+    } @else if (offline()) {
+      <span class="dot bad"></span> backend nedostupný
+    }
+  </span>
+</nav>
+
+<main>
+  <router-outlet />
+</main>

@@ -1,0 +1,59 @@
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    container_name: rag-db
+    environment:
+      POSTGRES_DB: rag
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rag}
+    ports:
+      - "127.0.0.1:55433:5432"
+    volumes:
+      - rag_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./rag_backend
+    container_name: rag-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://rag:${POSTGRES_PASSWORD:-rag}@db:5432/rag
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2}
+      EMBEDDING_DIM: ${EMBEDDING_DIM:-384}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
+      CORS_ORIGINS: http://localhost:4200,http://localhost:4300
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - rag_models:/models
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./rag_frontend
+    container_name: rag-frontend
+    ports:
+      - "127.0.0.1:4300:80"
+    depends_on:
+      - backend
+
+  # Local open-source LLM for answer generation. Pull a model once:
+  #   docker compose exec ollama ollama pull llama3.2
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag-ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - rag_ollama:/root/.ollama
+
+volumes:
+  rag_pgdata:
+  rag_models:
+  rag_ollama:
