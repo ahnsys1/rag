@@ -159,3 +159,11 @@ uvicorn app.main:app --reload
 
 cd /home/jan/Desktop/rag
 docker compose up -d --build
+
+
+
+
+
+# runs at
+- Angular: http://localhost:4300/search
+- JSP: http://localhost:4301/search
