@@ -45,6 +45,8 @@ def generate_answer(question: str, hits: list[SearchHit]) -> tuple[str, str | No
         with httpx.Client(timeout=s.ollama_timeout_seconds) as client:
             resp = client.post(f"{s.ollama_url.rstrip('/')}/api/chat", json=payload)
             resp.raise_for_status()
+    except httpx.RequestError:
+        return _fallback_answer(hits), None
     except httpx.HTTPError as exc:
         raise LLMUnavailable(f"Ollama request failed: {exc}") from exc
 
@@ -56,6 +58,6 @@ def _fallback_answer(hits: list[SearchHit]) -> str:
     if not hits:
         return "V indexovaných dokumentech nebyly nalezeny žádné relevantní pasáže."
     return (
-        "Generování odpovědi (LLM) není nakonfigurováno. Nejrelevantnější nalezené pasáže:\n\n"
+        "Automatické generování odpovědi není momentálně dostupné. Nejrelevantnější nalezené pasáže:\n\n"
         + "\n\n".join(f"[{i}] {h.content}" for i, h in enumerate(hits, start=1))
     )
